@@ -1,0 +1,44 @@
+<% layout('layouts/boilerplate') %>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-6 offset-3">
+                <h2 class="text-center">Upload Campsite</h2>
+                <form action="/campgrounds/new" , method=post novalidate class="needs-validation">
+                    <div class="mb-3">
+                        <label class="form-label" for="tt">Enter camp name: </label>
+                        <input class="form-control" type="text" name="campground[title]" id="tt" placeholder="'camp name'" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label " for="ll">Enter location details</label>
+                        <input type="text" class="form-control" name="campground[location]" id="ll" placeholder="'camp location'"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label " for="image">Image URl</label>
+                        <input type="text" class="form-control" name="campground[image]" id="image" placeholder="'image url'"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label " for="desc">Description</label>
+                        <textarea type="text" class="form-control" name="campground[description]" id="desc"
+                            placeholder="'add description'" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">$</span>
+                            <input type="text" class="form-control" placeholder="0.00" id="campground[price]" name="price"
+                                aria-label="price" aria-describedby="basic-addon1" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-success mt-3">Add campground</button>
+                    </div>
+                </form>
+                <a href="/campgrounds">Return to campgrounds!</a>
+            </div>
+        </div>
+    </div>
+
