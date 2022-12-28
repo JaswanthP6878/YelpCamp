@@ -3,9 +3,9 @@ const router = express.Router();
 const { campgroundSchema}  = require('../joiSchemas');
 const catchAsync = require('../utils/catchAsync');
 const Campground = require('../models/campground');
+const ExpressError = require('../utils/ExpressError');
 
 const validateCampground = (req, res, next) => {
-    const camp = new Campground(req.body.campground);
     const { error } = campgroundSchema.validate(req.body);
     if(error){
         const msg = error.details.map(el => el.message).join(',');
@@ -14,8 +14,6 @@ const validateCampground = (req, res, next) => {
         next();
     }
 }
-
-
 router.get('/', async (req, res) => {
     const camps = await Campground.find({});
     res.render('campgrounds/index', { camps });
@@ -27,9 +25,10 @@ router.get('/new', (req, res) => {
 })
 // creating  a new campground
 router.post('/new', validateCampground, catchAsync(async (req, res, next) => {
-    const data = await camp.save();
-    console.log(data);
-    res.send('data added succesfully!!');
+    const camp = new Campground(req.body.campground);
+    await camp.save();
+    req.flash('success', 'added campground successfully!!');
+    res.redirect(`/campgrounds/${camp._id}`);
    
 }))
 
