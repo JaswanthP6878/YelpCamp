@@ -25,12 +25,14 @@ router.post('/', validateReview,  catchAsync( async (req, res) => {
     camp.reviews.push(review);
     await camp.save();
     await review.save();
+    req.flash('success', 'added a new review!');
     res.redirect(`/campgrounds/${camp._id}`);
 }))
 router.delete('/:reviewid', catchAsync(async (req, res) => {
         const {id, reviewid} = req.params;
         await Campground.findByIdAndUpdate(id, {$pull : {reviews : reviewid}});
         await Review.findByIdAndDelete(req.params.reviewid);
+        req.flash('success', 'deleted Review successFully');
         res.redirect(`/campgrounds/${id}`);
 }))
 
