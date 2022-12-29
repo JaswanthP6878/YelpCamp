@@ -8,6 +8,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
+const userroutes = require('./routes/users');
 const ExpressError = require('./utils/ExpressError');
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
@@ -66,20 +67,20 @@ app.use((req, res, next) =>{
 
 /// Routes ////////////////////////////////
 
-app.get('/fakeUser', async (req, res) => {
-    const user = new User({email : 'jp12@gmail.com', username: 'jaswanth1218'});
-    const newUser = await User.register(user, 'chicken');
-    res.send(newUser);
+// app.get('/fakeUser', async (req, res) => {
+//     const user = new User({email : 'jp12@gmail.com', username: 'jaswanth1218'});
+//     const newUser = await User.register(user, 'chicken');
+//     res.send(newUser);
 
-})
+// })
+// routes
+app.use('/', userroutes);
+app.use('/campgrounds', campgrounds);
+app.use('/campgrounds/:id/reviews', reviews);
 
 app.get('/', (req, res) => {
     res.render('home');
 })
-
-// routes
-app.use('/campgrounds', campgrounds);
-app.use('/campgrounds/:id/reviews', reviews);
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('page not found', 404));
