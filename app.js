@@ -9,7 +9,8 @@ const flash = require('connect-flash');
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
 const ExpressError = require('./utils/ExpressError');
-
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy;
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -23,6 +24,9 @@ const app = express();
 const { nextTick } = require('process');
 
 
+//models
+const User = require('./models/user');
+
 // config
 const sessionConfig = {
     secret : 'thisisasecret',
@@ -35,14 +39,24 @@ const sessionConfig = {
     }
 }
 
-app.use(session(sessionConfig));
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOveride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session(sessionConfig));
 app.use(flash());
+
+// setting up passwords(should be done after app session is done)
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+/// passport settings commpleted.
+
 
 app.use((req, res, next) =>{
     res.locals.success = req.flash('success');
@@ -51,6 +65,14 @@ app.use((req, res, next) =>{
 })
 
 /// Routes ////////////////////////////////
+
+app.get('/fakeUser', async (req, res) => {
+    const user = new User({email : 'jp12@gmail.com', username: 'jaswanth1218'});
+    const newUser = await User.register(user, 'chicken');
+    res.send(newUser);
+
+})
+
 app.get('/', (req, res) => {
     res.render('home');
 })
