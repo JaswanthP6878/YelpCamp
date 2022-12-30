@@ -4,6 +4,7 @@ const { campgroundSchema}  = require('../joiSchemas');
 const catchAsync = require('../utils/catchAsync');
 const Campground = require('../models/campground');
 const ExpressError = require('../utils/ExpressError');
+const { isLoggedin } = require('../middleware');
 
 const validateCampground = (req, res, next) => {
     const { error } = campgroundSchema.validate(req.body);
@@ -20,11 +21,11 @@ router.get('/', async (req, res) => {
 })
 
 // create route
-router.get('/new', (req, res) => {
+router.get('/new',isLoggedin, (req, res) => {
     res.render('campgrounds/new');
 })
 // creating  a new campground
-router.post('/new', validateCampground, catchAsync(async (req, res, next) => {
+router.post('/new', isLoggedin , validateCampground, catchAsync(async (req, res, next) => {
     const camp = new Campground(req.body.campground);
     await camp.save();
     req.flash('success', 'added campground successfully!!');
@@ -45,7 +46,7 @@ router.get('/:id', catchAsync(async (req, res) => {
 }))
 
 // edit route:
-router.get('/:id/edit', catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedin ,catchAsync(async (req, res) => {
     const {id } = req.params;
     const camp = await Campground.findById(id);
     res.render('campgrounds/edit', { camp });
