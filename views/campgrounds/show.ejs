@@ -12,18 +12,18 @@
           </p>
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item">
-            <%= camp.location %>
-          </li>
-          <li class="list-group-item">$<%= camp.price %>
-          </li>
+          <li class="list-group-item"><%= camp.location %></li>
+          <li class="list-group-item">Submitted by: <%= camp.author.username %></li>
+          <li class="list-group-item">$<%= camp.price %></li>
         </ul>
+        <% if(currentUser && camp.author.equals(currentUser._id)) { %> <!-- checking if the campground belongs to user -->
         <div class="card-body">
           <a href="/campgrounds/<%= camp._id %>/edit" class="card-link btn btn-success">Edit campsite</a>
           <form class="d-inline" action="/campgrounds/<%= camp._id %>?_method=DELETE" method="POST">
             <button class="card-link btn btn-danger" type="submit">Delete camp ground</button>
           </form>
         </div>
+        <% } %> 
       </div>
     </div>
     <div class = "col-6  mt-3 mb-5">

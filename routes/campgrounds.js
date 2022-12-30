@@ -15,6 +15,16 @@ const validateCampground = (req, res, next) => {
         next();
     }
 }
+
+const isAuthor = async (req, res, next) => {
+    const { id } = req.params;
+    const campground = await Campground.findById(id);
+    if(!campground.author.equals(req.user._id)){
+        req.flash('error', 'You do not have permission');
+        return res.redirect(`/campgrounds/${id}`);
+    }
+    next();
+}
 router.get('/', async (req, res) => {
     const camps = await Campground.find({});
     res.render('campgrounds/index', { camps });
@@ -27,6 +37,7 @@ router.get('/new',isLoggedin, (req, res) => {
 // creating  a new campground
 router.post('/new', isLoggedin , validateCampground, catchAsync(async (req, res, next) => {
     const camp = new Campground(req.body.campground);
+    camp.author = req.user._id; // adding the author to campground
     await camp.save();
     req.flash('success', 'added campground successfully!!');
     res.redirect(`/campgrounds/${camp._id}`);
@@ -36,7 +47,7 @@ router.post('/new', isLoggedin , validateCampground, catchAsync(async (req, res,
 // find route
 router.get('/:id', catchAsync(async (req, res) => {
     const { id }  = req.params;
-    const camp = await Campground.findById(id).populate('reviews');
+    const camp = await Campground.findById(id).populate('reviews').populate('author');
     if(!camp){
         req.flash('error', 'Campground not found!');
         return res.redirect('/campgrounds')
@@ -46,20 +57,20 @@ router.get('/:id', catchAsync(async (req, res) => {
 }))
 
 // edit route:
-router.get('/:id/edit', isLoggedin ,catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedin, isAuthor ,catchAsync(async (req, res) => {
     const {id } = req.params;
     const camp = await Campground.findById(id);
     res.render('campgrounds/edit', { camp });
 }))
 
-router.put('/:id', catchAsync(async (req, res) => {
+router.put('/:id', isLoggedin, isAuthor ,catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, req.body, {new : true});
     console.log(campground)
     res.redirect(`/campgrounds/${campground._id}`);
 }))
 // deleting an campsite
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', isLoggedin, isAuthor , async (req, res) => {
     const { id } = req.params;
     const camp = await Campground.findByIdAndDelete(id);
     return res.redirect('/campgrounds');
