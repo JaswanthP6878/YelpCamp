@@ -27,6 +27,7 @@
       </div>
     </div>
     <div class = "col-6  mt-3 mb-5">
+      <% if((currentUser) && !(currentUser._id).equals(camp.author._id)){%> 
       <form action="/campgrounds/<%= camp._id %>/reviews" class = "needs-validation" method="post" novalidate>
         <h3>Add Review</h3>
         <label for="rating" class="form-label">Rating</label>
@@ -35,6 +36,7 @@
         <textarea name="review[body]" id="body" cols="30" rows="3" class="form-control" required></textarea>
         <input type="submit" value="Submit Review">
       </form>
+      <% } %> 
       <div>
         Reviews :
         <% for (let review of camp.reviews) { %>
@@ -42,12 +44,15 @@
           <div class="card-body">
             <p>Rating: <%= review.rating %></p>
             <p>details: <%= review.body %> </p>
+            <p>submitted: <%= review.author.username %> </p>
           </div>
+          <% if(currentUser && currentUser._id.equals(review.author._id)) { %> 
           <div class="card-footer">
             <form action="/campgrounds/<%= camp._id %>/reviews/<%= review._id%>?_method=DELETE", method = "POST">
               <input type="submit" value="Delete comment">
             </form>
           </div>
+        <% } %> 
         </div>
           <% } %>  
       </div>

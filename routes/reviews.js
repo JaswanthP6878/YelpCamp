@@ -22,9 +22,11 @@ router.post('/', validateReview,  catchAsync( async (req, res) => {
     // res.send('hit the post route');
     const camp = await Campground.findById(req.params.id);
     const review = new Review(req.body.review);
+    review.author = req.user._id;
     camp.reviews.push(review);
     await camp.save();
     await review.save();
+    console.log(review);
     req.flash('success', 'added a new review!');
     res.redirect(`/campgrounds/${camp._id}`);
 }))
