@@ -6,6 +6,12 @@ const Campground = require('../models/campground');
 const ExpressError = require('../utils/ExpressError');
 const { isLoggedin } = require('../middleware');
 
+
+// image upload config
+const { storage } = require('../cloudinary');
+const multer  = require('multer')
+const upload = multer({ storage })
+
 const validateCampground = (req, res, next) => {
     const { error } = campgroundSchema.validate(req.body);
     if(error){
@@ -15,7 +21,6 @@ const validateCampground = (req, res, next) => {
         next();
     }
 }
-
 const isAuthor = async (req, res, next) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
@@ -34,15 +39,23 @@ router.get('/', async (req, res) => {
 router.get('/new',isLoggedin, (req, res) => {
     res.render('campgrounds/new');
 })
-// creating  a new campground
-router.post('/new', isLoggedin , validateCampground, catchAsync(async (req, res, next) => {
+//creating  a new campground
+router.post('/new', isLoggedin, upload.array('image') ,validateCampground, catchAsync(async (req, res, next) => {
     const camp = new Campground(req.body.campground);
+    camp.images = req.files.map(f => ({url : f.path, filename: f.filename}));
     camp.author = req.user._id; // adding the author to campground
     await camp.save();
+    console.log(camp);
     req.flash('success', 'added campground successfully!!');
     res.redirect(`/campgrounds/${camp._id}`);
    
 }))
+
+// // testing cloudinary
+// router.post('/new', upload.single('image'), (req, res) => {
+//     console.log(req.body, req.file);
+//     res.send('It worked!!!');
+// })
 
 // find route
 router.get('/:id', catchAsync(async (req, res) => {

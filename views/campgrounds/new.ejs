@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-6 offset-3">
                 <h2 class="text-center">Upload Campsite</h2>
-                <form action="/campgrounds/new" , method=post novalidate class="needs-validation">
+                <form action="/campgrounds/new" , method=post novalidate class="needs-validation" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label class="form-label" for="tt">Enter camp name: </label>
                         <input class="form-control" type="text" name="campground[title]" id="tt" placeholder="'camp name'" required>
@@ -15,10 +15,14 @@
                             required>
                     </div>
                     <div class="mb-3">
+                        <label for="camp">Upload image of camp</label>
+                        <input type="file" name="image" id="camp" multiple>
+                    </div>
+                    <!-- <div class="mb-3">
                         <label class="form-label " for="image">Image URl</label>
                         <input type="text" class="form-control" name="campground[image]" id="image" placeholder="'image url'"
                             required>
-                    </div>
+                    </div> -->
                     <div class="mb-3">
                         <label class="form-label " for="desc">Description</label>
                         <textarea type="text" class="form-control" name="campground[description]" id="desc"
