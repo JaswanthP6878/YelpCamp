@@ -82,9 +82,12 @@ router.get('/:id/edit', isLoggedin, isAuthor ,catchAsync(async (req, res) => {
     res.render('campgrounds/edit', { camp });
 }))
 
-router.put('/:id', isLoggedin, isAuthor ,catchAsync(async (req, res) => {
+router.put('/:id', isLoggedin, isAuthor, upload.array('image') ,catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, req.body, {new : true});
+    const images = req.files.map(f => ({url : f.path, filename: f.filename}));
+    campground.images.push(...images);
+    await campground.save();
     console.log(campground)
     res.redirect(`/campgrounds/${campground._id}`);
 }))
