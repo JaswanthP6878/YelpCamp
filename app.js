@@ -65,7 +65,6 @@ passport.deserializeUser(User.deserializeUser());
 /// passport settings commpleted.
 
 
-
 // these res.locals are available to all the ejs templates
 app.use((req, res, next) =>{
     res.locals.currentUser = req.user;
